@@ -1,0 +1,36 @@
+/*
+ * gpio-demo overlay for Raspberry Pi 3B+ (bcm2837)
+ *   LED    : GPIO17 output
+ *   Button : GPIO27 input, internal pull-up, active-low
+ */
+/dts-v1/;
+/plugin/;
+
+/ {
+	compatible = "brcm,bcm2837";
+
+	fragment@0 {
+		target = <&gpio>;
+		__overlay__ {
+			gpio_demo_pins: gpio_demo_pins {
+				brcm,pins     = <17 27>;
+				brcm,function = <1 0>;	/* 1 = output, 0 = input */
+				brcm,pull     = <0 2>;	/* 0 = none,   2 = pull-up */
+			};
+		};
+	};
+
+	fragment@1 {
+		target-path = "/";
+		__overlay__ {
+			gpio-demo {
+				compatible = "sannu,gpio-demo";
+				pinctrl-names = "default";
+				pinctrl-0 = <&gpio_demo_pins>;
+				led-gpios    = <&gpio 17 0>;	/* GPIO_ACTIVE_HIGH */
+				button-gpios = <&gpio 27 1>;	/* GPIO_ACTIVE_LOW  */
+				status = "okay";
+			};
+		};
+	};
+};
